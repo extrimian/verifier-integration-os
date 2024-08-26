@@ -1,22 +1,31 @@
 export interface IoobBody{
-      did: string ;
-      inputDescriptors:Array<any>;
-      issuer?:object;
-      verificationParams?:object;
+    did: string ;
+    inputDescriptors:Array<any>;
+    issuer?:object;
+    verificationParams?:object;
 }
 export interface IverificationBody{
-    eventType: string,
-    eventData: EventData
+  eventType: string,
+  eventData: EventData
 }
 export interface IverifiableCredential{
-    credentialSubject: {id:string},
+  verifiableCredential:{credentialSubject: {id:string}}[]
 }
 
-type EventData = {
-        invitationId: string,
-        holderDID: string,
-        verifiableCredentials: Array<IverifiableCredential>,
-        verified: boolean,
-        verifierDID: string,
-        role: string   
+export interface IBuisinessLogic {
+      invitationId: string,
+      holderDID: string,
+      verifierDID: string,
+      vcs: IverifiableCredential
+  }
+
+
+export type EventData = {
+      invitationId: string,
+      holderDID: string,
+      verifiableCredentials: Array<IverifiableCredential>,
+      verified: boolean,
+      verifierDID: string,
+      role: string   
 }
+

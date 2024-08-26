@@ -1,6 +1,6 @@
 import { Body, Controller, Get, Param, Post, Put } from '@nestjs/common';
 import { AppService } from './app.service';
-import { IverificationBody , IoobBody } from './domain/requestBodys';
+import { IBuisinessLogic , IoobBody } from './domain/requestBodys';
 import { IoobResponse } from './domain/responseService';
 
 @Controller()
@@ -9,7 +9,7 @@ export class AppController {
 
   @Get()
   getHello():string {
-    return "Vivito y coleando";
+    return "Pong";
   };
 
   @Post('getOob')
@@ -17,10 +17,10 @@ export class AppController {
     return this.appService.getOob(body)
   };
 
-  @Put('verification')
-  async buisinessLogic(@Body() data:IverificationBody):Promise<any>{
+  @Put('buisinessLogic')
+  async buisinessLogic(@Body() data:IBuisinessLogic):Promise<{ result: true } | { result: false, rejectMessage: string }>{
     return await this.appService.buisinessLogic(data)
-  }
+  };
   @Get('result/:id')
   async getResult(@Param('id') id:string):Promise<any>{
     return await this.appService.getResult(id)

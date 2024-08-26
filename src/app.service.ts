@@ -1,7 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import axios from 'axios';
 import { config } from './config';
-import { IoobBody, IverificationBody } from './domain/requestBodys';
+import { IoobBody, IBuisinessLogic } from './domain/requestBodys';
 import { IoobResponse } from './domain/responseService';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
@@ -49,11 +49,10 @@ export class AppService {
   async getResult(invitation:string):Promise<IResult>{
     return await this.resultsModel.findOne({idInvitation:invitation})
   }
-  async buisinessLogic(data:IverificationBody):Promise<any>{
+  async buisinessLogic(data:IBuisinessLogic):Promise<any>{
       //here goes your buisiness logic
       return {
         result:true,
-        message:"OK"
       }
     }
 

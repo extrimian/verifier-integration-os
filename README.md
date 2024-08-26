@@ -91,4 +91,7 @@ Este endpoint no está provisto en el repositorio por defecto, pero se puede agr
 #### Funcionamiento:
 Este endpoint permite definir una lógica personalizada que se ejecutará después de que el flujo de verificación haya finalizado. El `{nombre de ruta}` debe ser definido según la lógica específica que se quiera implementar.
 
+## Licencia
+
+Este proyecto está licenciado bajo la Licencia Apache 2.0 modificada con una "Commons Clause". Ver el archivo [LICENSE.md](LICENSE) para más detalles.
 

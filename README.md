@@ -1,73 +1,94 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="200" alt="Nest Logo" /></a>
-</p>
+# API de Verificación
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+Esta API está diseñada para gestionar y ejecutar flujos de verificación de credenciales de manera eficiente y segura. Utilizando esta API, puedes generar invitaciones para verificación, aplicar lógica de negocio durante el proceso, y recuperar los resultados de las verificaciones realizadas.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## Recursos
 
-## Description
+### MongoDB
+La API utiliza MongoDB como base de datos para almacenar información relacionada con las invitaciones y los resultados de las verificaciones. Asegúrate de tener acceso a una instancia de MongoDB y de configurar la URL correctamente en las variables de entorno.
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+### SSI-API
+La SSI-API se encarga de realizar el flujo de verificación de credenciales. A través de esta API, se debe obtener el DID utilizado durante los flujos de verificación. 
 
-## Installation
+## Variables de Entorno
 
-```bash
-$ yarn install
-```
+Para configurar la API correctamente, asegúrate de definir las siguientes variables de entorno:
 
-## Running the app
+- **`SSI_API_URL`**: La URL de la SSI-API.
+- **`MONGO_URL`**: La URL de la base de datos MongoDB.
 
-```bash
-# development
-$ yarn run start
+Estas variables son esenciales para la correcta operación de la API y deben estar configuradas en el entorno donde se ejecute la aplicación.
 
-# watch mode
-$ yarn run start:dev
 
-# production mode
-$ yarn run start:prod
-```
+## Endpoints
 
-## Test
+La API proporciona los siguientes endpoints:
 
-```bash
-# unit tests
-$ yarn run test
+- **GET `/`**: Realiza un healthcheck para revisar el estado del servicio.
+- **POST `/getOob`**: Genera una invitación *out-of-band* (OOB) para iniciar el flujo de verificación en un frontend.
+- **PUT `/buisinessLogic`**: Aplica una lógica de negocio a la verificación y guarda el resultado para su recuperación futura.
+- **GET `/result/:id`**: Recupera el resultado de la verificación asociado con un ID de invitación específico.
+- **PUT `/webhook/{nombre de ruta}`**: Permite agregar lógica personalizada para ser ejecutada después del flujo de verificación.
 
-# e2e tests
-$ yarn run test:e2e
+Esta API está construida utilizando [NestJS](https://nestjs.com/) con TypeScript, proporcionando una arquitectura robusta y flexible para manejar las verificaciones de credenciales.
 
-# test coverage
-$ yarn run test:cov
-```
 
-## Supportttt
+### GET `/`
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+Este endpoint realiza un healthcheck para revisar el estado del servicio. Cuando se accede a esta ruta, se devuelve una respuesta que indica si el servicio está funcionando correctamente.
 
-## Stay in touch
+### POST `/getOob`
 
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+Este endpoint genera una *out-of-band* (OOB) invitation, la cual puede ser expuesta como un código QR o botón para iniciar el flujo de verificación en un frontend.
 
-## License
+#### Request Body:
+- `did`: `string` - El DID del verificador.
+- `inputDescriptors`: `Array<any>` - El tipo de credencial a verificar.
+- `issuer?`: `object` - Opcional, el emisor.
+- `verificationParams?`: `object` - Opcional, los parámetros para la lógica de verificación.
 
-Nest is [MIT licensed](LICENSE).
+#### Funcionamiento:
+Este endpoint permite al cliente proporcionar el DID del verificador, junto con los tipos de credenciales que se desean verificar a través de `inputDescriptors`. Los parámetros opcionales como el `issuer` y `verificationParams` pueden ser incluidos para personalizar la verificación. La invitación generada se guarda en una base de datos para recuperar los parámetros e ID de invitación en flujos futuros.
+### PUT `/buisinessLogic`
+
+Este endpoint permite agregar una lógica de negocio a la verificación, que se ejecutará durante dicho proceso.
+
+#### Request Body:
+
+IBuisinessLogic {
+    invitationId: string;
+    holderDID: string;
+    verifierDID: string;
+    vcs: IverifiableCredential;
+}
+
+IverifiableCredential {
+    verifiableCredential: { credentialSubject: { id: string } }[];
+}
+#### Funcionamiento:
+- Este endpoint recupera la invitación correspondiente usando el `invitationId`, junto con cualquier parámetro extra que se haya guardado.
+- La lógica de negocio definida se aplicará durante la verificación, utilizando los datos proporcionados, como el `holderDID`, `verifierDID`, y las credenciales verificables (`vcs`).
+- El resultado de la verificación debe retornar una promesa con uno de los siguientes objetos:
+  - `{ result: true }` si la verificación es exitosa.
+  - `{ result: false, rejectMessage: string }` si la verificación falla.
+
+Además, este endpoint es responsable de guardar el resultado de la verificación, que luego se puede recuperar mediante el endpoint `GET /result/:id`.
+
+### GET `/result/:id`
+
+Este endpoint permite recuperar el resultado de la verificación de manera externa al flujo de verificación.
+
+#### Parámetro de ruta:
+- `id`: El ID de la invitación que fue proporcionado por el endpoint `POST /getOob`.
+
+#### Funcionamiento:
+Este endpoint se utiliza para obtener el resultado de la verificación asociada con un `invitationId` específico. Al proporcionar el `id` correspondiente, se retorna el resultado previamente guardado por el endpoint `PUT /buisinessLogic`.
+
+### PUT `/webhook/{nombre de ruta}`
+
+Este endpoint no está provisto en el repositorio por defecto, pero se puede agregar si se desea incorporar lógica adicional después del flujo de verificación.
+
+#### Funcionamiento:
+Este endpoint permite definir una lógica personalizada que se ejecutará después de que el flujo de verificación haya finalizado. El `{nombre de ruta}` debe ser definido según la lógica específica que se quiera implementar.
+
+
